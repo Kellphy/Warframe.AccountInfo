@@ -11,6 +11,17 @@ namespace Kellphy.Warframe.AccountInfo
 	{
 		private static void Main(string[] args)
 		{
+			while(true)
+			{
+				MainMenu();
+				Console.WriteLine("\nPress any key to restart ...");
+				Console.ReadKey();
+				Console.Clear();
+			}
+		}
+
+		private static void MainMenu()
+		{
 			Console.WriteLine(
 				"[1] Relics\n" +
 				"[2] Arcanes");
