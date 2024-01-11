@@ -1,5 +1,7 @@
 # Warframe.AccountInfo
 
+Gets Account Data from AlecaFrame and processes it as follows:
+
 ## Relics
 
 List your relics to easily send over to Relic Discord bots.
