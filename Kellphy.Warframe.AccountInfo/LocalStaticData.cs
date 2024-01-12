@@ -11,5 +11,17 @@ namespace Kellphy.Warframe.AccountInfo
 			Console.WriteLine(text);
 		}
 
+		public static List<string> unreleasedArcanes = new List<string>()
+		{
+			"Arcane",
+			"Arcane Defense",
+			"Arcane Detoxifier",
+			"Arcane Liquid",
+			"Arcane Protection",
+			"Arcane Shield",
+			"Arcane Survival",
+			"Arcane Temperance"
+		};
+
 	}
 }

@@ -43,7 +43,12 @@ namespace Kellphy.Warframe.AccountInfo
 					break;
 
 				case ConsoleKey.D2:
-					var arcaneGroups = GetArcanes(jsonData);
+					var allArcanes = GetArcanes(jsonData);
+					if (allArcanes is null)
+					{
+						return;
+					}
+					var arcaneGroups = GetInventoryArcanes(jsonData, allArcanes);
 					if (arcaneGroups is null)
 					{
 						return;
@@ -66,6 +71,14 @@ namespace Kellphy.Warframe.AccountInfo
 					}
 
 					Console.ForegroundColor = ConsoleColor.Red;
+					Console.WriteLine("\n##### Arcanes not Owned #####\n");
+					Console.WriteLine(string.Join("\n",
+						allArcanes.Where(t => !arcaneGroups.Any(s => s.Key == t.Value.name) &&
+						!LocalStaticData.unreleasedArcanes.Any(s => s == t.Value.name))
+						.Select(t => t.Value.name)
+						.OrderBy(t => t)));
+
+					Console.ForegroundColor = ConsoleColor.DarkYellow;
 					Console.WriteLine("\n##### Arcanes to Complete #####\n");
 					Console.WriteLine(string.Join("\n",
 						arcanesToComplete.Select(t => $"{t.Name} {t.Level} ({t.Count})")
@@ -102,7 +115,7 @@ namespace Kellphy.Warframe.AccountInfo
 			{
 				return text;
 			}
-			using (AesManaged aesManaged = new AesManaged())
+			using (var aesManaged = new AesManaged())
 			{
 				ICryptoTransform transform = aesManaged.CreateDecryptor(StaticData.lastDataKey, StaticData.lastDataIV);
 				using (MemoryStream stream = new MemoryStream(File.ReadAllBytes(path)))
@@ -208,7 +221,7 @@ namespace Kellphy.Warframe.AccountInfo
 
 					for (int i = 0; i < words.Length - 1; i++)
 					{
-						var relic = relicData.FirstOrDefault(t =>
+						var relic = relicData?.FirstOrDefault(t =>
 						t.type?.ToLower() == words[i].ToLower()
 						&& t.id?.ToLower() == words[i + 1].ToLower());
 						if (relic != null)
@@ -233,14 +246,14 @@ namespace Kellphy.Warframe.AccountInfo
 			}));
 			return list;
 		}
-		private static List<IGrouping<string, ArcaneItem>>? GetArcanes(JObject jsonData)
+		private static Dictionary<string, DataArcane>? GetArcanes(JObject jsonData)
 		{
 			var allArcanesString = File.ReadAllText(StaticData.saveFolder + "/cachedData/json/Arcanes.json");
 			var allArcanesList = JsonConvert.DeserializeObject<List<DataArcane>>(allArcanesString)?.ToDictionary(dataPoint => dataPoint.uniqueName);
-			if (allArcanesList is null)
-			{
-				return null;
-			}
+			return allArcanesList;
+		}
+		private static List<IGrouping<string, ArcaneItem>> GetInventoryArcanes(JObject jsonData, Dictionary<string, DataArcane> allArcanesList)
+		{
 			var rawUpgrades = jsonData.Deserialize<Miscitem>("RawUpgrades");
 			var upgrades = jsonData.Deserialize<Upgrade>("Upgrades");
 
