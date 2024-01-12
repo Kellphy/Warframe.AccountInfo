@@ -88,8 +88,11 @@ namespace Kellphy.Warframe.AccountInfo
 		#region Common
 		private static JObject ImportFromDataFile()
 		{
-			var result = ReadAllTextEncrypted(StaticData.saveFolder + "\\lastData.dat");
-			File.WriteAllText(StaticData.saveFolder + "\\lastData.json", result);
+			var lastDataPath = StaticData.saveFolder + "\\lastData.dat";
+			var result = ReadAllTextEncrypted(lastDataPath);
+
+			Console.WriteLine($"Last Updated: {new FileInfo(lastDataPath).LastWriteTime}");
+
 			return JObject.Parse(result);
 		}
 		public static string ReadAllTextEncrypted(string path)
