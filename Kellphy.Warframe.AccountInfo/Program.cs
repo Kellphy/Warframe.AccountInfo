@@ -11,7 +11,8 @@ namespace Kellphy.Warframe.AccountInfo
 	{
 		private static void Main(string[] args)
 		{
-			while(true)
+			Console.ForegroundColor = ConsoleColor.Gray;
+			while (true)
 			{
 				MainMenu();
 				Console.WriteLine("\nPress any key to restart ...");
@@ -104,7 +105,7 @@ namespace Kellphy.Warframe.AccountInfo
 			var lastDataPath = StaticData.saveFolder + "\\lastData.dat";
 			var result = ReadAllTextEncrypted(lastDataPath);
 
-			Console.WriteLine($"Last Updated: {new FileInfo(lastDataPath).LastWriteTime}");
+			Console.WriteLine($"Last Updated: {new FileInfo(lastDataPath).LastWriteTime} with {result.Length} characters");
 
 			return JObject.Parse(result);
 		}
@@ -177,7 +178,7 @@ namespace Kellphy.Warframe.AccountInfo
 				}
 			}
 			LocalStaticData.relics = ownedRelics;
-			var relicGroups = ownedRelics?.GroupBy(t => RelicHelpers.RelicInfoFromString(t.Relic?.marketInfo?.urlName).type);
+			var relicGroups = ownedRelics?.GroupBy(t => RelicHelpers.RelicInfoFromString(t).type);
 			if (relicGroups == null)
 			{
 				return;
@@ -189,7 +190,7 @@ namespace Kellphy.Warframe.AccountInfo
 				{
 					output += $" {relicGroup.Key} ";
 
-					output += string.Join(" ", relicGroup.Select(t => RelicHelpers.RelicInfoFromString(t.Relic?.marketInfo?.urlName).id).Distinct()); ;
+					output += string.Join(" ", relicGroup.Select(t => RelicHelpers.RelicInfoFromString(t).id).Distinct());
 				}
 			}
 
@@ -197,20 +198,23 @@ namespace Kellphy.Warframe.AccountInfo
 		}
 		private static void RelicLogic()
 		{
-			var relicData = LocalStaticData.relics?.Select(t => RelicHelpers.RelicInfoFromString(t.Relic?.marketInfo?.urlName));
+			var relicData = LocalStaticData.relics?.Select(t => RelicHelpers.RelicInfoFromString(t));
 			while (true)
 			{
-				Console.WriteLine("\nPaste text to check relics from:\n");
+				var stringToExit = "q";
+				Console.WriteLine($"\nPaste text to check relics from ({stringToExit} to exit):\n");
+				Console.ForegroundColor = ConsoleColor.DarkGray;
 				string? input = string.Empty;
 				var lines = new List<string>();
 
-				while ((input = Console.ReadLine()) != "exit")
+				while ((input = Console.ReadLine()) != stringToExit)
 				{
 					if (input != null)
 					{
 						lines.Add(input);
 					}
 				}
+				Console.ForegroundColor = ConsoleColor.Gray;
 
 				Console.WriteLine("\nGroups that you can apply for:\n");
 
@@ -219,6 +223,7 @@ namespace Kellphy.Warframe.AccountInfo
 					var formattedLine = line.Replace("@", "");
 					string[] words = formattedLine.Split(' ');
 
+					var relics = new List<RelicInfo>();
 					for (int i = 0; i < words.Length - 1; i++)
 					{
 						var relic = relicData?.FirstOrDefault(t =>
@@ -226,8 +231,17 @@ namespace Kellphy.Warframe.AccountInfo
 						&& t.id?.ToLower() == words[i + 1].ToLower());
 						if (relic != null)
 						{
-							Console.WriteLine($"{line}\n----- with your: {relic.type} {relic.id}");
+							relics.Add(relic);
 						}
+					}
+
+					if(relics.Count > 0)
+					{
+						Console.ForegroundColor = ConsoleColor.Yellow;
+						Console.WriteLine(line);
+						Console.ForegroundColor = ConsoleColor.Green;
+						relics.ForEach(t => Console.WriteLine($"+ {t.type} {t.id} ({t.count})"));
+						Console.ForegroundColor = ConsoleColor.Gray;
 					}
 				}
 			}

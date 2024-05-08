@@ -1,13 +1,16 @@
 ﻿using Kellphy.Warframe.AccountInfo.Models;
+using static Kellphy.Warframe.AccountInfo.Models.RelicModel;
 
 namespace Kellphy.Warframe.AccountInfo.Helpers
 {
 	public static class RelicHelpers
 	{
-		public static RelicInfo RelicInfoFromString(string? urlName)
+		public static RelicInfo RelicInfoFromString(RelicItem relicItem)
 		{
+			string? urlName = relicItem.Relic?.marketInfo?.urlName;
+
 			var relicInfo = new RelicInfo();
-			if (urlName == null)
+			if (urlName is null)
 			{
 				return relicInfo;
 			}
@@ -21,6 +24,7 @@ namespace Kellphy.Warframe.AccountInfo.Helpers
 
 			relicInfo.type = strings[0];
 			relicInfo.id = strings[1];
+			relicInfo.count = relicItem.Item?.ItemCount ?? 0;
 			return relicInfo;
 		}
 	}
