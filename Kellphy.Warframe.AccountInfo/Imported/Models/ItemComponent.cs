@@ -1,10 +1,10 @@
 ﻿// Decompiled with JetBrains decompiler
-// Type: AlecaFraceClientLib.Data.Types.ItemComponent
+// Type: AlecaFrameClientLib.Data.Types.ItemComponent
 // Assembly: AlecaFrameClientLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 530002EE-180F-4309-87B7-42C94C23C74B
-// Assembly location: C:\Users\virtu\AppData\Local\Overwolf\Extensions\afmcagbpgggkpdkokjhjkllpegnadmkignlonpjm\2.6.34\NET\AlecaFrameClientLib.dll
+// MVID: A886CA06-AEA1-4DF9-9273-8423A987943C
+// Assembly location: C:\Users\virtu\AppData\Local\Overwolf\Extensions\afmcagbpgggkpdkokjhjkllpegnadmkignlonpjm\2.6.63\NET\AlecaFrameClientLib.dll
 
-namespace Kellphy.Warframe.AccountInfo.Imported.Models
+namespace AlecaFrameClientLib.Data.Types
 {
 	public class ItemComponent
 	{
@@ -160,7 +160,34 @@ namespace Kellphy.Warframe.AccountInfo.Imported.Models
 				realExternalName = realExternalName.Replace("Dual Decurion", "Decurion");
 			if (this.isPartOf != null && !this.isPartOf.name.Contains("Ambassador"))
 			{
-				throw new NotImplementedException();
+				bool flag = false | this.isPartOf is DataWarframe;
+				if (!flag && StaticData.dataHandler != null)
+				{
+					List<ExtendedCraftingRemoteDataItemComponent> dataItemComponentList1 = new();
+					if ((bool)(StaticData.dataHandler?.tradeableCraftingPartsByUID?.TryGetValue(this.uniqueName, out dataItemComponentList1).GetValueOrDefault()))
+					{
+						if (dataItemComponentList1.Count > 0)
+						{
+							int num1 = ((flag ? 1 : 0) | (dataItemComponentList1[0].componentType != ComponentType.SubBlueprint ? 0 : (dataItemComponentList1[0].tradeable ? 1 : 0))) != 0 ? 1 : 0;
+							ExtendedCraftingRemoteDataItemComponent dataItemComponent = dataItemComponentList1[0];
+							int num2 = dataItemComponent != null ? (dataItemComponent.components.Any<ExtendedCraftingRemoteDataItemComponent>((Func<ExtendedCraftingRemoteDataItemComponent, bool>)(p => p.componentType == ComponentType.SubBlueprint && p.tradeable)) ? 1 : 0) : 0;
+							flag = (num1 | num2) != 0;
+						}
+					}
+					else
+					{
+						List<ExtendedCraftingRemoteDataItemComponent> dataItemComponentList2 = new();
+						if ((bool)StaticData.dataHandler?.nonTradeableCraftingPartsByUID?.TryGetValue(this.uniqueName, out dataItemComponentList2).GetValueOrDefault() && dataItemComponentList2.Count > 0)
+						{
+							int num3 = ((flag ? 1 : 0) | (dataItemComponentList2[0].componentType != ComponentType.SubBlueprint ? 0 : (dataItemComponentList2[0].tradeable ? 1 : 0))) != 0 ? 1 : 0;
+							ExtendedCraftingRemoteDataItemComponent dataItemComponent = dataItemComponentList2[0];
+							int num4 = dataItemComponent != null ? (dataItemComponent.components.Any<ExtendedCraftingRemoteDataItemComponent>((Func<ExtendedCraftingRemoteDataItemComponent, bool>)(p => p.componentType == ComponentType.SubBlueprint && p.tradeable)) ? 1 : 0) : 0;
+							flag = (num3 | num4) != 0;
+						}
+					}
+				}
+				if (flag && !realExternalName.EndsWith("Blueprint"))
+					realExternalName += " Blueprint";
 			}
 			return realExternalName;
 		}

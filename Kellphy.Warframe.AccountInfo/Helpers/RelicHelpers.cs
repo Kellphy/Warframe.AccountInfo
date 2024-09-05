@@ -1,5 +1,4 @@
 ﻿using Kellphy.Warframe.AccountInfo.Models;
-using static Kellphy.Warframe.AccountInfo.Models.RelicModel;
 
 namespace Kellphy.Warframe.AccountInfo.Helpers
 {

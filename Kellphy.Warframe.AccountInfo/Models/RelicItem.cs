@@ -1,4 +1,4 @@
-﻿using Kellphy.Warframe.AccountInfo.Imported.Models;
+﻿using AlecaFrameClientLib.Data.Types;
 
 namespace Kellphy.Warframe.AccountInfo.Models
 {

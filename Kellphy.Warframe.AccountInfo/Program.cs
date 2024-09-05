@@ -1,5 +1,6 @@
-﻿using Kellphy.Warframe.AccountInfo.Helpers;
-using Kellphy.Warframe.AccountInfo.Imported.Models;
+﻿using AlecaFrameClientLib;
+using AlecaFrameClientLib.Data.Types;
+using Kellphy.Warframe.AccountInfo.Helpers;
 using Kellphy.Warframe.AccountInfo.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -30,7 +31,9 @@ namespace Kellphy.Warframe.AccountInfo
 			var choice = Console.ReadKey();
 			Console.WriteLine();
 
-			var jsonData = ImportFromDataFile();
+			var jsonRootData = ImportFromDataFile();
+			var root = jsonRootData.ToObject<WarframeRootObject>();
+			var jsonData = JObject.Parse(root.InventoryJSON);
 			switch (choice.Key)
 			{
 				case ConsoleKey.D1:
@@ -39,6 +42,8 @@ namespace Kellphy.Warframe.AccountInfo
 					{
 						return;
 					}
+					Console.WriteLine($"Found {miscItems.Count} items");
+
 					GetRelics(miscItems);
 					RelicLogic();
 					break;
@@ -49,11 +54,14 @@ namespace Kellphy.Warframe.AccountInfo
 					{
 						return;
 					}
+					Console.WriteLine($"Found {allArcanes.Count} arcanes");
+
 					var arcaneGroups = GetInventoryArcanes(jsonData, allArcanes);
 					if (arcaneGroups is null)
 					{
 						return;
 					}
+					Console.WriteLine($"Found {arcaneGroups.Count} inventory arcanes");
 
 					var arcanesToSell = new List<ArcaneItem>();
 					var arcanesToComplete = new List<ArcaneItem>();
@@ -235,7 +243,7 @@ namespace Kellphy.Warframe.AccountInfo
 						}
 					}
 
-					if(relics.Count > 0)
+					if (relics.Count > 0)
 					{
 						Console.ForegroundColor = ConsoleColor.Yellow;
 						Console.WriteLine(line);
