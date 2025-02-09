@@ -5,5 +5,6 @@
 		public string Name;
 		public int Level;
 		public int Count;
+		public ItemPriceSmallResponse? ItemPriceSmallResponse;
 	}
 }

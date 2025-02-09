@@ -4,6 +4,7 @@
 // MVID: A886CA06-AEA1-4DF9-9273-8423A987943C
 // Assembly location: C:\Users\virtu\AppData\Local\Overwolf\Extensions\afmcagbpgggkpdkokjhjkllpegnadmkignlonpjm\2.6.63\NET\AlecaFrameClientLib.dll
 
+using AlecaFrameClientLib.Utils;
 using Newtonsoft.Json;
 using System.Net;
 
