@@ -1,8 +1,13 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: AlecaFrameClientLib.Data.Types.ItemComponent
 // Assembly: AlecaFrameClientLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: A886CA06-AEA1-4DF9-9273-8423A987943C
-// Assembly location: C:\Users\virtu\AppData\Local\Overwolf\Extensions\afmcagbpgggkpdkokjhjkllpegnadmkignlonpjm\2.6.63\NET\AlecaFrameClientLib.dll
+// MVID: 48846E38-6ED6-4519-B776-E43CAC265573
+// Assembly location: C:\Users\virtu\AppData\Local\Overwolf\Extensions\afmcagbpgggkpdkokjhjkllpegnadmkignlonpjm\2.6.82\NET\AlecaFrameClientLib.dll
+
+using AlecaFramePublicLib;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AlecaFrameClientLib.Data.Types
 {
@@ -163,10 +168,10 @@ namespace AlecaFrameClientLib.Data.Types
 				bool flag = false | this.isPartOf is DataWarframe;
 				if (!flag && StaticData.dataHandler != null)
 				{
-					List<ExtendedCraftingRemoteDataItemComponent> dataItemComponentList1 = new();
-					if ((bool)(StaticData.dataHandler?.tradeableCraftingPartsByUID?.TryGetValue(this.uniqueName, out dataItemComponentList1).GetValueOrDefault()))
+					List<ExtendedCraftingRemoteDataItemComponent> dataItemComponentList1;
+					if (StaticData.dataHandler?.tradeableCraftingPartsByUID?.TryGetValue(this.uniqueName, out dataItemComponentList1).GetValueOrDefault() ?? false)
 					{
-						if (dataItemComponentList1.Count > 0)
+						if (dataItemComponentList1?.Count > 0)
 						{
 							int num1 = ((flag ? 1 : 0) | (dataItemComponentList1[0].componentType != ComponentType.SubBlueprint ? 0 : (dataItemComponentList1[0].tradeable ? 1 : 0))) != 0 ? 1 : 0;
 							ExtendedCraftingRemoteDataItemComponent dataItemComponent = dataItemComponentList1[0];
@@ -176,13 +181,16 @@ namespace AlecaFrameClientLib.Data.Types
 					}
 					else
 					{
-						List<ExtendedCraftingRemoteDataItemComponent> dataItemComponentList2 = new();
-						if ((bool)StaticData.dataHandler?.nonTradeableCraftingPartsByUID?.TryGetValue(this.uniqueName, out dataItemComponentList2).GetValueOrDefault() && dataItemComponentList2.Count > 0)
+						List<ExtendedCraftingRemoteDataItemComponent> dataItemComponentList2;
+						if (StaticData.dataHandler?.nonTradeableCraftingPartsByUID?.TryGetValue(this.uniqueName, out dataItemComponentList2).GetValueOrDefault() ?? false && dataItemComponentList2.Count > 0)
 						{
-							int num3 = ((flag ? 1 : 0) | (dataItemComponentList2[0].componentType != ComponentType.SubBlueprint ? 0 : (dataItemComponentList2[0].tradeable ? 1 : 0))) != 0 ? 1 : 0;
-							ExtendedCraftingRemoteDataItemComponent dataItemComponent = dataItemComponentList2[0];
-							int num4 = dataItemComponent != null ? (dataItemComponent.components.Any<ExtendedCraftingRemoteDataItemComponent>((Func<ExtendedCraftingRemoteDataItemComponent, bool>)(p => p.componentType == ComponentType.SubBlueprint && p.tradeable)) ? 1 : 0) : 0;
-							flag = (num3 | num4) != 0;
+							if (dataItemComponentList2?.Count > 0)
+							{
+								int num3 = ((flag ? 1 : 0) | (dataItemComponentList2[0].componentType != ComponentType.SubBlueprint ? 0 : (dataItemComponentList2[0].tradeable ? 1 : 0))) != 0 ? 1 : 0;
+								ExtendedCraftingRemoteDataItemComponent dataItemComponent = dataItemComponentList2[0];
+								int num4 = dataItemComponent != null ? (dataItemComponent.components.Any<ExtendedCraftingRemoteDataItemComponent>((Func<ExtendedCraftingRemoteDataItemComponent, bool>)(p => p.componentType == ComponentType.SubBlueprint && p.tradeable)) ? 1 : 0) : 0;
+								flag = (num3 | num4) != 0;
+							}
 						}
 					}
 				}

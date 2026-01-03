@@ -1,14 +1,19 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: AlecaFrameClientLib.Data.Types.DataRelic
 // Assembly: AlecaFrameClientLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: A886CA06-AEA1-4DF9-9273-8423A987943C
-// Assembly location: C:\Users\virtu\AppData\Local\Overwolf\Extensions\afmcagbpgggkpdkokjhjkllpegnadmkignlonpjm\2.6.62\NET\AlecaFrameClientLib.dll
+// MVID: 48846E38-6ED6-4519-B776-E43CAC265573
+// Assembly location: C:\Users\virtu\AppData\Local\Overwolf\Extensions\afmcagbpgggkpdkokjhjkllpegnadmkignlonpjm\2.6.82\NET\AlecaFrameClientLib.dll
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AlecaFrameClientLib.Data.Types
 {
 	public class DataRelic : BigItem
 	{
 		public Dictionary<DataRelic.RelicRarities, DataRelic.RelicDropData> relicRewards = new Dictionary<DataRelic.RelicRarities, DataRelic.RelicDropData>();
+		public List<DataRelic.DataRelicReward> rewards = new List<DataRelic.DataRelicReward>();
 
 		public bool tradable { get; set; }
 
@@ -21,6 +26,18 @@ namespace AlecaFrameClientLib.Data.Types
 		public override int GetAccountMasteryGivenPerLevel() => 0;
 
 		public override bool IsOwned() => StaticData.dataHandler.warframeRootObject != null && ((IEnumerable<Miscitem>)StaticData.dataHandler.warframeRootObject.MiscItems).Any<Miscitem>((Func<Miscitem, bool>)(p => p.ItemType == this.uniqueName));
+
+		public class DataRelicReward
+		{
+			public string rarity;
+			public float chance;
+			public DataRelic.DataRelicReward.DataRelicRewardItem item;
+
+			public class DataRelicRewardItem
+			{
+				public string name;
+			}
+		}
 
 		public class RelicDropData
 		{

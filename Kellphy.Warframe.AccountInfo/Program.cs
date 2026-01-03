@@ -12,6 +12,20 @@ namespace Kellphy.Warframe.AccountInfo
 {
 	internal class Program
 	{
+		private static readonly List<string> _namePrefixesToRemove = new()
+		{
+			"/Lotus/Upgrades/CosmeticEnhancers/Antiques/"
+		};
+
+		private static string CleanName(string name)
+		{
+			foreach (var prefix in _namePrefixesToRemove)
+			{
+				name = name.Replace(prefix, "/ ");
+			}
+			return name;
+		}
+
 		private static void Main(string[] args)
 		{
 			Console.ForegroundColor = ConsoleColor.Gray;
@@ -35,6 +49,7 @@ namespace Kellphy.Warframe.AccountInfo
 
 			var jsonRootData = ImportFromDataFile();
 			var root = jsonRootData.ToObject<WarframeRootObject>();
+			root = JsonConvert.DeserializeObject(root?.InventoryJSON ?? "", typeof(WarframeRootObject)) as WarframeRootObject;
 			switch (choice.Key)
 			{
 				case ConsoleKey.D1:
@@ -88,7 +103,7 @@ namespace Kellphy.Warframe.AccountInfo
 						.OrderBy(t => t).ToList();
 					List<string> stringList = notOwned.Select(t => GetWarframeMarketURLName(t)).ToList();
 					string dataToSend = JsonConvert.SerializeObject((object)stringList);
-					ItemPriceSmallResponse[] priceSmallResponseArray = JsonConvert.DeserializeObject<ItemPriceSmallResponse[]>(MakePOSTRequest(StaticData.PricesAPIHostname + "/priceData", dataToSend, (int)TimeSpan.FromSeconds(7.0).TotalMilliseconds, 1));
+					ItemPriceSmallResponse[]? priceSmallResponseArray = JsonConvert.DeserializeObject<ItemPriceSmallResponse[]>(MakePOSTRequest(StaticData.PricesAPIHostname + "/priceData", dataToSend, (int)TimeSpan.FromSeconds(7.0).TotalMilliseconds, 1));
 					if (priceSmallResponseArray is not null && priceSmallResponseArray.Length == stringList.Count)
 					{
 						for (int i = 0; i < priceSmallResponseArray.Length; i++)
@@ -105,21 +120,21 @@ namespace Kellphy.Warframe.AccountInfo
 					Console.ForegroundColor = ConsoleColor.DarkYellow;
 					Console.WriteLine("\n##### Arcanes to Complete #####\n");
 					Console.WriteLine(string.Join("\n",
-						arcanesToComplete.Select(t => $"{t.Name} {t.Level} ({t.Count})" +
-						$" | MinBuy({t.ItemPriceSmallResponse.insta})" +
-						$" MinSell({t.ItemPriceSmallResponse.post}) PostMax({t.ItemPriceSmallResponse.postMax})" +
-						$" MinR0({t.ItemPriceSmallResponse.minR0}) MinRMax({t.ItemPriceSmallResponse.minRMax})" +
-						$" Volume({t.ItemPriceSmallResponse.volume})")
+						arcanesToComplete.Select(t => $"{CleanName(t.Name)} {t.Level} ({t.Count})" +
+						$" | MinBuy({t.ItemPriceSmallResponse?.insta})" +
+						$" MinSell({t.ItemPriceSmallResponse?.post}) PostMax({t.ItemPriceSmallResponse?.postMax})" +
+						$" MinR0({t.ItemPriceSmallResponse?.minR0}) MinRMax({t.ItemPriceSmallResponse?.minRMax})" +
+						$" Volume({t.ItemPriceSmallResponse?.volume})")
 						.OrderBy(t => t)));
 
 					Console.ForegroundColor = ConsoleColor.Green;
 					Console.WriteLine("\n##### Arcanes to Sell #####\n");
 					Console.WriteLine(string.Join("\n",
-						arcanesToSell.Select(t => $"{t.Name} {t.Level} ({t.Count})" +
-						$" | MinBuy({t.ItemPriceSmallResponse.insta})" +
-						$" MinSell({t.ItemPriceSmallResponse.post}) PostMax({t.ItemPriceSmallResponse.postMax})" +
-						$" MinR0({t.ItemPriceSmallResponse.minR0}) MinRMax({t.ItemPriceSmallResponse.minRMax})" +
-						$" Volume({t.ItemPriceSmallResponse.volume})")
+						arcanesToSell.Select(t => $"{CleanName(t.Name)} {t.Level} ({t.Count})" +
+						$" | MinBuy({t.ItemPriceSmallResponse?.insta})" +
+						$" MinSell({t.ItemPriceSmallResponse?.post}) PostMax({t.ItemPriceSmallResponse?.postMax})" +
+						$" MinR0({t.ItemPriceSmallResponse?.minR0}) MinRMax({t.ItemPriceSmallResponse?.minRMax})" +
+						$" Volume({t.ItemPriceSmallResponse?.volume})")
 						.OrderBy(t => t)));
 
 					Console.ForegroundColor = ConsoleColor.Gray;
@@ -326,7 +341,7 @@ namespace Kellphy.Warframe.AccountInfo
 
 			List<string> stringList = arcaneList.Select(t => GetWarframeMarketURLName(t.Key)).ToList();
 			string dataToSend = JsonConvert.SerializeObject((object)stringList);
-			ItemPriceSmallResponse[] priceSmallResponseArray = JsonConvert.DeserializeObject<ItemPriceSmallResponse[]>(MakePOSTRequest(StaticData.PricesAPIHostname + "/priceData", dataToSend, (int)TimeSpan.FromSeconds(7.0).TotalMilliseconds, 1));
+			ItemPriceSmallResponse[]? priceSmallResponseArray = JsonConvert.DeserializeObject<ItemPriceSmallResponse[]>(MakePOSTRequest(StaticData.PricesAPIHostname + "/priceData", dataToSend, (int)TimeSpan.FromSeconds(7.0).TotalMilliseconds, 1));
 
 			if(priceSmallResponseArray is not null && priceSmallResponseArray.Length == stringList.Count)
 			{
@@ -479,12 +494,12 @@ namespace Kellphy.Warframe.AccountInfo
 					str = myWebClient.UploadString(url, dataToSend);
 					break;
 				}
-				catch (Exception ex)
+				catch
 				{
 					--num;
 					StaticData.Log(OverwolfWrapper.LogType.WARN, "Failed to make POST request: " + url);
 					if (num <= 0)
-						throw ex;
+						throw;
 				}
 			}
 			while (num > 0);

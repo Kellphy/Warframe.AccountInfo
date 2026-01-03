@@ -15,9 +15,14 @@ namespace AlecaFrameClientLib
 {
 	public static class Extensions
 	{
-		public static bool GetValueOrDefault<T>(this T value) where T : notnull
+		public static bool GetValueOrDefault(this bool value)
 		{
-			throw new NotImplementedException();
+			return value;
+		}
+
+		public static bool GetValueOrDefault(this bool? value)
+		{
+			return value ?? false;
 		}
 	}
 }

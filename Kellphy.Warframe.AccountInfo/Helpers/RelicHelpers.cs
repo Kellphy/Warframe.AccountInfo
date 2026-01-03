@@ -6,15 +6,15 @@ namespace Kellphy.Warframe.AccountInfo.Helpers
 	{
 		public static RelicInfo RelicInfoFromString(RelicItem relicItem)
 		{
-			string? urlName = relicItem.Relic?.marketInfo?.urlName;
+			string? name = relicItem.Relic?.name;
 
 			var relicInfo = new RelicInfo();
-			if (urlName is null)
+			if (name is null)
 			{
 				return relicInfo;
 			}
 
-			string[] strings = urlName.Split('_');
+			string[] strings = name.Split(' ');
 
 			if (strings.Length < 3)
 			{
@@ -23,6 +23,7 @@ namespace Kellphy.Warframe.AccountInfo.Helpers
 
 			relicInfo.type = strings[0];
 			relicInfo.id = strings[1];
+			//relicInfo.level = strings[2];
 			relicInfo.count = relicItem.Item?.ItemCount ?? 0;
 			return relicInfo;
 		}

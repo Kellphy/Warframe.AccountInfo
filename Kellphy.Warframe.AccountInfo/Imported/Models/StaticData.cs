@@ -1,12 +1,16 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: AlecaFrameClientLib.StaticData
 // Assembly: AlecaFrameClientLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: A886CA06-AEA1-4DF9-9273-8423A987943C
-// Assembly location: C:\Users\virtu\AppData\Local\Overwolf\Extensions\afmcagbpgggkpdkokjhjkllpegnadmkignlonpjm\2.6.63\NET\AlecaFrameClientLib.dll
+// MVID: 48846E38-6ED6-4519-B776-E43CAC265573
+// Assembly location: C:\Users\virtu\AppData\Local\Overwolf\Extensions\afmcagbpgggkpdkokjhjkllpegnadmkignlonpjm\2.6.82\NET\AlecaFrameClientLib.dll
 
+using AlecaFrameClientLib.Data;
 using AlecaFrameClientLib.Utils;
+using AlecaFramePublicLib.DataTypes;
 using Newtonsoft.Json;
+using System;
 using System.Net;
+using System.Threading;
 
 namespace AlecaFrameClientLib
 {
@@ -113,7 +117,7 @@ namespace AlecaFrameClientLib
 		public static bool notificationSoundsEnabled = true;
 		public static Lazy<WFMItemList> LazyWfmItemData = new Lazy<WFMItemList>((Func<WFMItemList>)(() =>
 		{
-			return JsonConvert.DeserializeObject<WFMItemList>(new MyWebClient()
+			WFMItemList wfmItemList = JsonConvert.DeserializeObject<WFMItemList>(new MyWebClient()
 			{
 				Proxy = ((IWebProxy)null),
 				Headers = {
@@ -122,7 +126,9 @@ namespace AlecaFrameClientLib
 			"AlecaFrame_Client"
 		  }
 		}
-			}.DownloadString("https://" + StaticData.CachedWFMAPIHostname + "/v1/items"));
+			}.DownloadString("https://" + StaticData.CachedWFMAPIHostname + "/v2/items"));
+			wfmItemList.InitializeDictionary();
+			return wfmItemList;
 		}));
 		public static string discordWarframeMarketNotificationTemplate = "New <:warframe:771543444178337792> WFMarket message: **<WFM_MESSAGE>**";
 		public static bool includeFormaLevelMasteryHelper = true;
