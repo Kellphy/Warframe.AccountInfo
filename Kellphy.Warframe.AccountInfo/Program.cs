@@ -49,7 +49,6 @@ namespace Kellphy.Warframe.AccountInfo
 
 			var jsonRootData = ImportFromDataFile();
 			var root = jsonRootData.ToObject<WarframeRootObject>();
-			root = JsonConvert.DeserializeObject(root?.InventoryJSON ?? "", typeof(WarframeRootObject)) as WarframeRootObject;
 			switch (choice.Key)
 			{
 				case ConsoleKey.D1:
